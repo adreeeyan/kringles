@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="../js/jquery-2.1.4.min.js"></script>
+<script src="../js/bootstrap.min.js"></script>
+<script src="../js/knockout-3.3.0.js"></script>
+<script src="../js/underscore-min.js"></script>
+<script src="../js/cookie.js"></script>
+<link rel="stylesheet" href="../css/master.css">
+<link rel="stylesheet" href="../css/bootstrap.min.css">
+<link rel="stylesheet" href="../css/bootstrap-theme.min.css">
+<link rel="shortcut icon" href="../images/favicon.ico" />
+<title>Kringles - Login</title>
+</head>
+<body>
+	<div class="container">
+		<div class="login-container">
+			<div class="login">
+				<form class="form-signin">
+					<h2 class="form-signin-heading">Please sign in</h2>
+					<label for="inputEmail" class="sr-only">Username</label>
+					<input type="text" class="form-control" placeholder="Username" required autofocus data-bind="textInput: username, disable: isLoggingIn, enterkey: login">
+					<label for="inputPassword" class="sr-only">Password</label>
+					<input type="password" id="inputPassword" class="form-control" placeholder="Password" required data-bind="textInput: password, disable: isLoggingIn, enterkey: login">
+					<button class="btn btn-lg btn-primary btn-block" id="loginBtn" type="button" data-bind="click: login, disable: isLoggingIn">
+						<span class="glyphicon glyphicon-refresh glyphicon-refresh-animate" data-bind="visible: isLoggingIn"></span>
+						<span data-bind="visible: !isLoggingIn()">Sign in</span>
+					</button>
+					<div>No account yet? <a href="/register">Register here.</a></div>
+				</form>
+			</div>
+		</div>
+	</div>
+	<div id="message" class="modal fade" data-backdrop="static" data-keyboard="false" role="dialog">
+		<div class="modal-dialog modal-sm">
+
+			<!-- Modal content-->
+			<div class="modal-content">
+				<div class="modal-body">
+					<h4>WRONG!!!</h4>
+				</div>
+				<div class="modal-footer">
+					<button type="button" id="playBtn" data-dismiss="modal" style="width: 100%;" class="btn btn-danger">Sorry</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script src="../js/common.js"></script>
+	<script src="../js/login.js"></script>
+</body>
+</html>

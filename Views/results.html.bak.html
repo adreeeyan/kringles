@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="../js/jquery-2.1.4.min.js"></script>
+<script src="../js/bootstrap.min.js"></script>
+<script src="../js/knockout-3.3.0.js"></script>
+<script src="../js/underscore-min.js"></script>
+<link rel="stylesheet" href="../css/master.css">
+<link rel="stylesheet" href="../css/bootstrap.min.css">
+<link rel="stylesheet" href="../css/bootstrap-theme.min.css">
+<link rel="shortcut icon" href="../images/favicon.ico" />
+<title>Kringles - Results</title>
+</head>
+<body>
+	<div class="container">
+		<div style="margin-top: 100px; float: right;  color: white; background-color: black; padding-left: 5px; padding-right: 5px; border-bottom-left-radius: 5px;">
+			<span href="#" style="margin-top: 100px; cursor: pointer;" data-bind="click: logout">Logout</span>
+		</div>
+		<div class="results">
+			<h2>Kringles result</h2>
+			<table class="table table-hover table-bordered" style="background-color: floralwhite;">
+				<thead>
+					<tr>
+						<th>Date</th>
+						<th>Kringle</th>
+						<th>Manito Manita</th>
+					</tr>
+				</thead>
+				<tbody data-bind="foreach: kringles">
+					<tr style="height: 51px;">
+						<td data-bind="text: date"></td>
+						<td data-bind="text: name"></td>
+						<!-- ko if: userToGive() && showUserToGive() -->
+						<td>
+							<span data-bind="text: userToGive"></span>
+							<button type="button" class="btn btn-info" data-bind="click: hide">Hide</button>							
+						</td>
+						<!-- /ko -->
+						<!-- ko if: userToGive() && !showUserToGive() -->
+						<td>
+							<button type="button" class="btn btn-info" data-bind="click: show">Show</button>
+						</td>
+						<!-- /ko -->
+						<!-- ko ifnot: userToGive -->
+						<td>
+							<button type="button" class="btn btn-info" data-bind="click: $parent.showSpinner">Pick</button>
+						</td>
+						<!-- /ko -->
+					</tr>
+				</tbody>
+			</table>
+			<div style="display: flex;" data-bind="foreach: kringles">
+				<div class="pull-left">
+					<img class="img-thumbnail" style="max-width: 250px;" data-bind="attr: {src: picture}">
+					<!-- ko if: userToGive() && showUserToGive() -->
+					<button type="button" class="btn btn-info btn-block" style="margin-top: 10px;" data-bind="click: hide">Hide</button>
+					<!-- /ko -->
+					<!-- ko if: userToGive() && !showUserToGive() -->
+					<button type="button" class="btn btn-info btn-block" style="margin-top: 10px;" data-bind="click: show">Show</button>
+					<!-- /ko -->
+					<!-- ko ifnot: userToGive -->
+					<button type="button" class="btn btn-info btn-block" data-bind="click: $parent.showSpinner">Pick</button>
+					<!-- /ko -->
+				</div>
+				<div style="margin-left: 10px; width: 80%;">
+					<div>
+						<b>Kringle: </b>
+						<span data-bind="text: name"></span>
+					</div>
+					<div>
+						<b>Date: </b>
+						<span data-bind="text: date"></span>
+					</div>
+					<div data-bind="if: userToGive() && showUserToGive()">
+						<b>Partner: </b>
+						<span data-bind="text: userToGive"></span>
+					</div>
+					<div data-bind="if: userToGive() && showUserToGive()">
+						<b>His/Her wishlist: </b>
+						<span style="white-space: pre-wrap;" data-bind="text: partnerWishList"></span>
+					</div>
+					<div>
+						<b>Your wishlist: </b>
+						<span style="white-space: pre-wrap;" data-bind="text: yourWishList"></span>
+						<button type="button" class="btn btn-warning btn-xs" style="margin-left: 10px;" data-bind="click: $parent.showUpdateWishList.bind($data)">Edit your wishlist</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div id="spinner" class="modal fade" data-backdrop="static" data-keyboard="false" role="dialog">
+		<div class="modal-dialog modal-sm">
+
+			<!-- Modal content-->
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" data-bind="visible: !isSpinning()">&times;</button>
+					<h4 class="modal-title" style="text-align: center">Choose your destiny!</h4>
+				</div>
+				<div class="modal-body" data-bind="with: pickedUser" style="text-align: center">
+					<img style="height: 200px; width: 200px;" data-bind="attr: {src: picture, alt: name}" />
+				</div>
+				<div class="modal-footer">
+					<button type="button" id="playBtn" style="width: 100%;" class="btn btn-success" data-bind="click: postKringle, disable: isSpinning">Please be good to me!</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div id="wishlistInput" class="modal fade" data-backdrop="static" data-keyboard="false" role="dialog">
+		<div class="modal-dialog" data-bind="with: currentKringle">
+
+			<!-- Modal content-->
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+					<h4 class="modal-title" style="text-align: center">What do you want?</h4>
+				</div>
+				<div class="modal-body" style="text-align: center; height: 200px;">
+					<textarea style="width: 100%; height: 100%; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box;" data-bind="textInput: $parent.tempWishlist"></textarea>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+					<button type="button" class="btn btn-success" data-bind="click: $parent.updateWishList">Update</button>
+				</div>
+			</div>
+		</div>
+	</div>
+<script src="../js/viewmodel.js"></script>
+</body>
+</html>
