@@ -30,13 +30,13 @@
 					<div class="pull-left">
 						<img class="img-thumbnail" style="max-width: 250px; max-height: 250px;" data-bind="attr: {src: picture}">
 						<!-- ko if: userToGive() && showUserToGive() -->
-						<button type="button" class="btn btn-info btn-block" style="margin-top: 10px;" data-bind="click: hide">Hide</button>
+						<button type="button" class="btn btn-warning btn-block" style="margin-top: 10px;" data-bind="click: hide">Hide</button>
 						<!-- /ko -->
 						<!-- ko if: userToGive() && !showUserToGive() -->
-						<button type="button" class="btn btn-info btn-block" style="margin-top: 10px;" data-bind="click: show">Show</button>
+						<button type="button" class="btn btn-warning btn-block" style="margin-top: 10px;" data-bind="click: show">Show</button>
 						<!-- /ko -->
 						<!-- ko ifnot: userToGive -->
-						<button type="button" class="btn btn-info btn-block" data-bind="click: $parent.showSpinner">Pick</button>
+						<button type="button" class="btn btn-warning btn-block" data-bind="click: $parent.showSpinner">Pick</button>
 						<!-- /ko -->
 					</div>
 					<div style="margin-left: 10px; width: 80%;">
@@ -54,11 +54,11 @@
 						</div>
 						<div data-bind="if: userToGive() && showUserToGive()">
 							<b>His/Her wishlist: </b>
-							<div style="white-space: pre-wrap;" data-bind="html: partnerWishList"></div>
+							<div data-bind="html: partnerWishList"></div>
 						</div>
 						<div>
 							<b>Your wishlist: </b>
-							<div style="white-space: pre-wrap;" data-bind="html: yourWishList"></div>
+							<div data-bind="html: yourWishList"></div>
 							<button type="button" class="btn btn-danger" style="margin-top: 10px;" data-bind="click: $parent.showUpdateWishList.bind($data)">Edit your wishlist</button>
 						</div>
 					</div>

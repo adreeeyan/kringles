@@ -331,7 +331,7 @@ apiRoutes.get("/kringles", function(req, res){
 							userToGive: (user) ? user.name : null,
 							userToGivePicture: (user) ? user.picture : null,
 							yourWishList: pair.wishlist,
-							partnerWishList: partner.wishlist
+							partnerWishList: partner ? partner.wishlist : null
 						});
 						callback();
 					});
@@ -351,13 +351,24 @@ apiRoutes.get("/kringles", function(req, res){
 apiRoutes.post("/kringles", function(req, res){
 
     var kringle = req.body.kringle;
-    var user = req.body.user;
+	var user = req.body.user;
+	
+	//retrieve list of users that the user had partnered with
+	function partneredUsersRoute(pickedUsers) {
+		UserKringle.find({ kringle: { $ne: kringle }, user: user }, { userToGive: 1 }, function (err, partners) {
+			var partneredUsers = _und.pluck(partners, "userToGive");
+			pickedUsersRoute(pickedUsers, partneredUsers);
+		});
+	}
 
 	//find the unpicked users
-	function pickedUsersRoute(pickedUsers){
-        User.find({username: {$nin: pickedUsers, $ne: user}, }, {name: 1, username: 1, picture: 1}, function(err, users){
-            var luckyUser = _und.shuffle(users)[0];
-            updateUserKringle(luckyUser);
+	function pickedUsersRoute(pickedUsers, partneredUsers) {
+		var unavailableUsers = pickedUsers.concat(partneredUsers);
+        User.find({username: {$nin: unavailableUsers, $ne: user}, }, {name: 1, username: 1, picture: 1}, function(err, users){
+			var luckyUser = _und.shuffle(users)[0];
+			if (luckyUser) {
+            	updateUserKringle(luckyUser);								
+			}
     	});
 	}
 
@@ -383,8 +394,8 @@ apiRoutes.post("/kringles", function(req, res){
 		);
 	}
 
-	//main
-	User.find({}, {name: 1, username: 1, picture: 1}, function(err, users){
+	// find the active members
+	User.find({inactive: {$ne: true}}, {name: 1, username: 1, picture: 1}, function(err, users){
 		var usersKey = _und.pluck(users, "username");
 		UserKringle.find({kringle: kringle}, function(err, list){
 			var alreadyPickedUsers = _und.filter(list, function(user){
@@ -407,10 +418,10 @@ apiRoutes.post("/kringles", function(req, res){
 					});
 					updateUserKringle(userData);
 				}else{
-					pickedUsersRoute(pickedUsers);
+					partneredUsersRoute(pickedUsers);
 				}
 			}else{
-				pickedUsersRoute(pickedUsers);
+				partneredUsersRoute(pickedUsers);
 			}
 		});
 	});
@@ -466,6 +477,42 @@ apiRoutes.put("/wishlist/:kringle", function (req, res) {
 			res.json({success: true});
 		}
 	);
+});
+
+// route to add a kringle
+// todo: guard this route
+apiRoutes.post("/addkringle", function (req, res) {
+	var id = req.body.id;
+	var name = req.body.name;
+	var date = req.body.date;
+	var kringle = new Kringle();
+	kringle.id = id;
+	kringle.name = name;
+	kringle.date = date;
+	kringle.save(function (err) {
+
+		// add the kringle to the users
+		User.find({}, function (err, users) {
+			var items = [];
+			users.forEach(function (user) {
+				items.push({
+					user: user.username,
+					kringle: kringle.id
+				});
+			});
+
+			if (items.length > 0) {
+				UserKringle.collection.insert(items, function (err) {
+					if (err) {
+						throw err;
+					}
+					res.json({ success: true, message: "Kringles successfully added to users" });
+				})
+			} else {
+				res.json({ success: true, message: "Kringles not added to users though" });
+			}
+		});
+	});
 });
 
 // route to get current logged user
